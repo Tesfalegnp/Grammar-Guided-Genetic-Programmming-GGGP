@@ -67,8 +67,8 @@
   ( let* (
             ($y (match &grammar $tree $tree))
             ($count (size-atom $y))
-         ) ( ;$count
-          if (==  $count)
+         ) ( 
+          if (== [] $count)
               False
               (if (> $count 1)
                     True
@@ -76,12 +76,6 @@
             )
     )
 )
-
-;; test case and expected output 
-;; True
-! ( "Print True if it Listed in Atomspace, otherway Fasle:"   (is_list (const 5)))
-
-
 
 ;; helper function for contains_symbol
 (: (contains_symbol_list (-> List Symbol Boolean)))
@@ -125,15 +119,20 @@
 ; ! "Test: filter_terminals"
 ; !(filter_terminals ((expr const) (expr (expr op expr)) (expr var)))
 
-; ! "Test: contains_symbol"
-; !(contains_symbol (expr var) expr)
-; !(contains_symbol (const 1) expr)
+! "Test: contains_symbol"
+!(contains_symbol (expr var) expr) ;;True
+!(contains_symbol (const 1) expr)   ;; False
 
 ! "Test: element_at 2 index"
 !(element_at (10 20 30 40) 2)
 
 ! "Random Selection from given list"
 !(select_random (10 20 30 40 50))             
+
+;; test case and expected output 
+;; True
+! "Print True if it Listed in Atomspace, otherway Fasle:"
+! (is_list (const 2))
 
 
 
