@@ -20,6 +20,7 @@
 
 !(add-atom &grammar (var x))
 
+;; my case number can be 1-3, but can be maximuze or minimaze
 !(add-atom &grammar (const 1))
 !(add-atom &grammar (const 2))
 !(add-atom &grammar (const 3))
@@ -44,12 +45,17 @@
 
 (: (filter_list_terminal (-> List Symbol List)))
 (= (filter_list_terminal $rules $non_terminal)
-  (if (== $rules ()) ()
-    (let (($head (car $rules))
-          ($tail (cdr $rules)))
-      (if (contains_symbol $head $non_terminal)
-        (filter_list_terminal $tail $non_terminal)
-        (cons $head (filter_list_terminal $tail $non_terminal))))))
+  (if (== $rules ()) 
+      ()
+      (let* (($head (car-atom $rules))
+            ($tail (cdr-atom $rules)))
+        (
+          if (contains_symbol $head $non_terminal) ;;still fine
+          (filter_list_terminal $tail $non_terminal)
+          (cons-atom $head (filter_list_terminal $tail $non_terminal))
+        )
+      )
+  ))
 
 (: (contains_symbol (-> Expression Symbol Boolean)))
 (= (contains_symbol $tree $sym)
@@ -62,22 +68,34 @@
    )
 )
 
+;; to be asure the tree have on the list of atomspace
 (: (is_list (-> Any Boolean)))
 (= (is_list $tree)
-  ( let* (
-            ($y (match &grammar $tree $tree))
-            ($count (size-atom $y))
-         ) ( 
-          if (== [] $count)
-              False
-              (if (> $count 1)
-                    True
-                    False)
+   ( let* (
+            ($y (collapse (let $x (get-atoms &grammar) $x)))
+            ($bool (is_list_helper $y $tree))
+          )
+           $bool        
+    )
+)
+
+;; helper function for is list function with recusively search
+(= (is_list_helper () $search_tree) False)
+(= (is_list_helper $All_List $search_tree)
+    (
+      let* (
+              ($first (car-atom $All_List))
+              ($remain (cdr-atom $All_List))
+           )
+            (
+                if (== $first $search_tree)
+                  True ;; if found
+                  (is_list_helper $remain $search_tree) ;; recusively call if not get value
             )
     )
 )
 
-;; helper function for contains_symbol
+                ;; helper function for contains_symbol
 (: (contains_symbol_list (-> List Symbol Boolean)))
 (= (contains_symbol_list $lst $sym)
   (if (== $lst ()) 
@@ -87,6 +105,7 @@
       (contains_symbol_list (cdr-atom $lst) $sym))
   )
 )
+
 
 (: (expand_rule (-> Expression Number Expression)))
 (= (expand_rule $rule $depth)
@@ -111,28 +130,6 @@
   (if (== $i 0) 
     (car-atom $lst)
     (element_at (cdr-atom $lst) (- $i 1))))
-
-
-; ! "Test: create_individual"
-; !(create_individual expr 0)
-
-; ! "Test: filter_terminals"
-; !(filter_terminals ((expr const) (expr (expr op expr)) (expr var)))
-
-! "Test: contains_symbol"
-!(contains_symbol (expr var) expr) ;;True
-!(contains_symbol (const 1) expr)   ;; False
-
-! "Test: element_at 2 index"
-!(element_at (10 20 30 40) 2)
-
-! "Random Selection from given list"
-!(select_random (10 20 30 40 50))             
-
-;; test case and expected output 
-;; True
-! "Print True if it Listed in Atomspace, otherway Fasle:"
-! (is_list (const 2))
 
 
 
@@ -184,7 +181,7 @@
 (: (init_population (-> Number List)))
 (= (init_population $n)
   (if (== $n 0) ()
-    (cons (create_individual expr 0) (init_population (- $n 1)))))
+    (cons-atom (create_individual expr 0) (init_population (- $n 1)))))
 
 ; ! "Test: init_population"
 ; !(init_population 3)
@@ -206,10 +203,15 @@
 
 (: (crossover (-> Expression Expression Expression)))
 (= (crossover $p1 $p2)
-  (if (is_list $p1)
-    (if (== (random-int &rng 0 2) 0) $p2
-      (cons (crossover (car $p1) (car $p2)) (cdr $p1)))
-    $p1))
+  ( is_list $p1
+    ; if (is_list $p1)
+    ;   (if (== (random-int &rng 0 2) 0) 
+    ;         $p2
+    ;         (cons-atom (crossover (car-atom $p1) (car-atom $p2)) (cdr-atom $p1))
+    ;   )
+    ;   $p1
+  )
+)
 
 ; ! "Test: crossover"
 ; !(crossover (expr (const 1) (op +) (const 2)) (expr (const 3) (op *) (const 1)))
