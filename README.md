@@ -170,8 +170,8 @@ Parameters:
 
 ## ✍️ Author
 
-Hope @ iCog Labs
-Trained & supported by OpenAI ChatGPT
+Tesfalegn @ iCog Labs intern
+Trained & supported by Eyobed
 
 ---
 
