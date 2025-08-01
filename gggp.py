@@ -58,7 +58,7 @@ class GGGP:
             else:
                 # Terminal: create leaf node
                 node.children.append(Node(s, s))
-                
+            # print (f"experision are :  {node}")    
         return node
 
     def evaluate(self, node, x):
