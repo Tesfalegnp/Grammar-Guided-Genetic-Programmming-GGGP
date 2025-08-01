@@ -29,11 +29,7 @@
 ;; 2. Helper Functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(= (len ()) 0)
-(= (len ( $x $xs))
-    (+ 1 (len $xs)))
-; ! (len ( expr ( (expr op expr) ( const ())))) ;; 2
-
+(=(len $pop) (size-atom $pop))
 
 (: (element_at (-> List Number Any)))
 
@@ -62,6 +58,7 @@
       True
       (is_list_helper $remain $search_tree))))
 
+      ;; to be ensure the the atom in atomspace
 (: (ensure_list (-> Any List)))
 (= (ensure_list $r)
   (if (is_list $r) 

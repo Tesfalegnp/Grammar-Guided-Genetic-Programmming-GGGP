@@ -3,34 +3,48 @@
 
 
 
-! "TEST: element_at"
-!(element_at (10 20 30 40) 0) ;; Expected: 10
-!(element_at (10 20 30 40) 2) ;; Expected: 30
-!(element_at () 1) ;; Expected: ()
+; ! "TEST: element_at"
+; !(element_at (10 20 30 40) 0) ;; Expected: 10
+; !(element_at (10 20 30 40) 2) ;; Expected: 30
+; !(element_at () 1) ;; Expected: ()
 
 
 ; ! "TEST: is_list and ensure_list"
-; !(is_list (expr (const 1))) ;; Expected: True (should match grammar tree)
-; !(is_list (const 1)) ;; Expected: False
+; !(is_list (expr (const 1))) ;; Expected: False 
+; !(is_list (const 1)) ;; Expected: True
 ; !(ensure_list (const 2)) ;; Expected: (const 2)
 ; !(ensure_list (expr (const 2))) ;; Expected: (expr (const 2))
 
 
 
 ; ! "TEST: create_individual"
-; !(create_individual const 0) ;; Expected: (const 1), (const 2), or (const 3)
+; !(create_individual const 0) ;; Expected: Either one of (const 1), (const 2), or (const 3)
 ; !(create_individual var 0) ;; Expected: (var x)
-; !(create_individual op 0) ;; Expected: +, -, *, or /
+; !(create_individual op 0) ;; Expected:Either one of  +, -, *, or /   with op (e.g op +)
 ; !(create_individual expr 0) ;; Expected: full expression, like (expr (const 2) (op +) (var x))
 
 
+    ;; population with size 
+; ! "Create Population with fixed Size"
+; !(init_population 2) 
+        ;; Expected (e.g 
+        ;   ((expr (const 1))
+        ;   (expr (const 2))
+        ;   (expr (const 3))
+        ;   (expr (expr (const 2)) (op +) ((expr (var x))))
+        ;   (expr (const 1))))
 
-; !(init_population 2)
+
+; ! "TEST: mutate" 
+; !(mutate (expr (const 1))) ;; Should return a new random expression
 
 
 
 
 ; ! "TEST: evaluate"
+; !(evaluate (expr (const 2 ()) (op +) ((expr (var x ())))) 3)
+;; ➜ Result: 5
+
 ; !(evaluate (expr (const 2)) 4) ;; Expected: 2
 ; !(evaluate (expr (var x)) 5) ;; Expected: 5
 ; !(evaluate (expr (expr (const 2)) (op +) ((expr (var x)))) 3) ;; Expected: 5
@@ -43,17 +57,13 @@
 ; !(fitness (expr (expr (const 2)) (op +) ((expr (var x))))) ;; Should be low
 
 
-; ! "TEST: init_population"
-; !(init_population 2) ;; Expected: list of 2 expressions
+; ! "TEST: inialized population population Size"
 ; !(len (init_population 3)) ;; Expected: 3
 
 
-; ! "TEST: mutate"
-; !(mutate (expr (const 1))) ;; Should return a new random expression
-
 
 ; ! "TEST: crossover"
-; !(crossover (expr (const 1)) (expr (const 3))) ;; Randomly mixes
+; !(crossover (const x) (expr (const 3))) ;; Randomly mixes
 ; !(crossover (expr (const 2)) (expr (var x))) ;; Expected: mixed expression
 
 
